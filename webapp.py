@@ -41,8 +41,8 @@ def upload_report(hostname):
     pass
 
 
-@app.route('/detail/<hostname>/', methods=['GET'])
-@app.route('/detail/<hostname>', methods=['GET'])
+@app.route('/details/<hostname>/', methods=['GET'])
+@app.route('/details/<hostname>', methods=['GET'])
 def show_details(hostname):
     hosts = _get_hosts()
     details = {}
@@ -52,8 +52,7 @@ def show_details(hostname):
     else:
         details = conn.hgetall("%s:%s" % (settings.CUR_PREFIX, hostname))
         gc.disable()
-        details['report'] = unpackb(details['report'],
-                                    object_hook=_decode_datetime)
+        details['report'] = unpackb(details['report'])
         gc.enable()
     return render_template("details.html", details=details)
 
@@ -62,18 +61,17 @@ def show_details(hostname):
 def show_reports():
     hosts = _get_hosts()
     reports = []
-    gc.disable()
     for h in hosts:
-        rkey = "%s:%s" % (settings.CUR_PREFIX, h['host'])
+        rkey = "%s:%s" % (settings.CUR_PREFIX, h)
         r = conn.hgetall(rkey)
         t = strftime("%Y-%m-%d %H:%M:%S", gmtime(float(r['time'])))
-        r['report'] = unpackb(r['report'],
-                              object_hook=_decode_datetime)
+        gc.disable()
+        r['report'] = unpackb(r['report'])
+        gc.enable()
         value = {'host': r['report']['host'],
                  'status': r['report']['status'],
                  'time': t}
         reports.append(value)
-    gc.enable()
     return render_template("index.html", reports=reports)
 
 if __name__ == '__main__':

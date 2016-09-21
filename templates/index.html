@@ -17,10 +17,10 @@
     <tbody>
       {%- for r in reports -%}
         <tr>
-          <td>{{ r.name }}</td>
+          <td>{{ r.host }}</td>
           <td>{{ r.status }}</td>
           <td>{{ r.time }}</td>
-	  <td><a href="{{ url_for('/details/', hostname=r.name }}">Details</a></td>
+	  <td><a href="{{ url_for('/details/', hostname=r.host ) }}">Details</a></td>
         </tr>
       {%- endfor -%}
     </tbody>
