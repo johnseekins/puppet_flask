@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes" />
+  <title>Puppet Reports</title>
+</head>
+<body>
+  <table>
+    <thead>
+      <td>Host</td>
+      <td>Status</td>
+      <td>Report Time</td>
+      <td>Details</td>
+    </thead>
+    <tbody>
+      {%- for r in reports -%}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td>{{ r.status }}</td>
+          <td>{{ r.time }}</td>
+          <td><a href="">Details</a></td>
+        </tr>
+      {%- endfor -%}
+    </tbody>
+  </table>
+</body>
+</html>
