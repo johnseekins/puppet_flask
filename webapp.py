@@ -29,7 +29,7 @@ def _decode_datetime(obj):
 def _get_hosts():
     hosts = conn.hgetall('hosts')
     gc.disable()
-    hosts = unpackb(hosts['hosts'], object_hook=_decode_datetime)
+    hosts = unpackb(hosts['hosts'])
     gc.enable()
     hosts = [h['host'] for h in hosts]
     return hosts
