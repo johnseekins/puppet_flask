@@ -35,8 +35,14 @@ def _get_hosts():
     return hosts
 
 
-@app.route('/detail/<hostname>/')
-@app.route('/detail/<hostname>')
+@app.route('/upload/<hostname>/', methods=['POST'])
+@app.route('/upload/<hostname>', methods=['POST'])
+def upload_report(hostname):
+    pass
+
+
+@app.route('/detail/<hostname>/', methods=['GET'])
+@app.route('/detail/<hostname>', methods=['GET'])
 def show_details(hostname):
     hosts = _get_hosts()
     details = {}
@@ -52,7 +58,7 @@ def show_details(hostname):
     return render_template("details.html", details=details)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def show_reports():
     hosts = _get_hosts()
     reports = []

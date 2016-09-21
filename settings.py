@@ -8,6 +8,7 @@ APP_DIR = dirname(realpath(__file__))
 ROOT_DIR = APP_DIR.split("/")[-1]
 CUR_PREFIX = 'curreport'
 HIST_PREFIX = 'histreport'
+HIST_REPORTS = 3
 
 # Debug
 FLASK_HOST = '0.0.0.0'

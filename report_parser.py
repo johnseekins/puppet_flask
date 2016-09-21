@@ -47,7 +47,7 @@ def _send_to_redis(name, report):
             old_value = eval(old_value)
         if not old_value or old_value['time'] != report['time']:
             conn.lpush(hist_key, value)
-            conn.ltrim(hist_key, 0, 2)
+            conn.ltrim(hist_key, 0, (settings.HIST_REPORTS - 1))
     else:
         report = packb({'status': 'report load error'})
         value = {'report': report, 'time': time()}

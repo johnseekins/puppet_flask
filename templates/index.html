@@ -20,7 +20,7 @@
           <td>{{ r.name }}</td>
           <td>{{ r.status }}</td>
           <td>{{ r.time }}</td>
-          <td><a href="">Details</a></td>
+	  <td><a href="{{ url_for('/details/', hostname=r.name }}">Details</a></td>
         </tr>
       {%- endfor -%}
     </tbody>
