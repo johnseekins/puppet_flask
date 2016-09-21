@@ -13,7 +13,7 @@ import settings
 
 app = Flask(__name__)
 app.config.from_object(settings)
-app.template_folder = settings.APP_DIR
+app.template_folder = "%s/templates" % settings.APP_DIR
 
 conn = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT,
                    settings.REDIS_DB)
