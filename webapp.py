@@ -43,7 +43,7 @@ def upload_report(hostname):
 
 @app.route('/details/<hostname>/', methods=['GET'])
 @app.route('/details/<hostname>', methods=['GET'])
-def show_details(hostname):
+def details(hostname):
     hosts = _get_hosts()
     details = {}
     if hostname not in hosts:
