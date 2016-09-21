@@ -61,7 +61,8 @@ def show_reports():
         rkey = "%s:%s" % (settings.CUR_PREFIX, h['host'])
         r = conn.hgetall(rkey)
         t = strftime("%Y-%m-%d %H:%M:%S", gmtime(float(r['time'])))
-        r['report'] = unpackb(r['report'])
+        r['report'] = unpackb(r['report'],
+                              object_hook=_decode_datetime)
         value = {'host': r['report']['host'],
                  'status': r['report']['status'],
                  'time': t}
