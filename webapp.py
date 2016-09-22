@@ -41,6 +41,7 @@ def details(hostname):
         gc.disable()
         details = unpackb(details['report'])
         gc.enable()
+        del details['resource_statuses']
     return render_template("details.html", details=details)
 
 
@@ -57,7 +58,10 @@ def show_reports():
         gc.enable()
         value = {'host': r['report']['host'],
                  'status': r['report']['status'],
+                 'environment': r['report']['environment'],
                  'time': t}
+        if all(v not in value['status'] for v in ['failed', 'error']):
+            value['change_count'] = r['report']['metrics']['changes']['values'][0][2],
         reports.append(value)
     return render_template("index.html", reports=reports)
 

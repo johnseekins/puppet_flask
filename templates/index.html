@@ -11,19 +11,28 @@
     <thead>
       <td>Host</td>
       <td>Status</td>
-      <td>Report Time</td>
+      <td>Environment</td>
+      <td>Changes</td>
       <td>Details</td>
+      <td>Report Time</td>
     </thead>
     <tbody>
       {%- for r in reports -%}
         <tr>
           <td>{{ r.host }}</td>
           <td>{{ r.status }}</td>
+          <td>{{ r.environment }}</td>
+          {%- if 'change_count' in r.keys() -%}
+            <td>{{ r.change_count[0] }}</td>
+          {%- else -%}
+            <td>Error</td>
+          {%- endif -%}
+          <td><a href="{{ url_for('.details', hostname=r.host) }}">Details</a></td>
           <td>{{ r.time }}</td>
-	  <td><a href="{{ url_for('/details/', hostname=r.host ) }}">Details</a></td>
         </tr>
       {%- endfor -%}
     </tbody>
   </table>
 </body>
 </html>
+
