@@ -3,7 +3,7 @@ import yaml
 import sys
 import os
 import gc
-from time import time, mktime
+from time import time, mktime, timezone
 import scandir
 from multiprocessing import Pool, cpu_count
 import redis
@@ -50,14 +50,16 @@ def _send_to_redis(name, report):
             conn.ltrim(hist_key, 0, (settings.HIST_REPORTS - 1))
     else:
         report = packb({'status': 'report load error'})
-        value = {'report': report, 'time': time()}
+        t = time() + timezone
+        value = {'report': report, 'time': t}
     conn.hmset(cur_key, value)
 
 
 def _read_report(host):
     rep_name = "%s:%s" % (settings.CUR_PREFIX, host['host'])
+    t = time() + timezone
     or_time = conn.hget(rep_name, 'time')
-    if not or_time or time() - float(or_time) > settings.INTERVAL:
+    if not or_time or t - float(or_time) > settings.INTERVAL:
         latest_report = ""
         r_time = 0
         for report in scandir.scandir(host['report_dir']):
@@ -78,12 +80,13 @@ def _read_report(host):
 
 def load_hosts():
     old_hosts = conn.hgetall('hosts')
-    if not old_hosts or time() - float(old_hosts['time']) > settings.INTERVAL:
+    t = time() + timezone
+    if not old_hosts or t - float(old_hosts['time']) > settings.INTERVAL:
         ROOT = settings.REPORT_DIR
         hosts = [{'host': path.name, 'report_dir': path.path} for path in
                  scandir.scandir(ROOT) if path.is_dir()]
         packed = packb(hosts)
-        value = {'time': time(), 'hosts': packed}
+        value = {'time': t, 'hosts': packed}
         conn.hmset('hosts', value)
     else:
         gc.disable()
