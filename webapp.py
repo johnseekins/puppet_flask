@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import sys
 import os
 import gc
-from time import time, strftime, gmtime
+from time import time, strftime, gmtime, timezone
 from msgpack import unpackb
 import datetime
 import redis
@@ -28,20 +28,43 @@ def _get_hosts():
     return hosts
 
 
+@app.route('/historical/<hostname>/<version>/', methods=['GET'])
+@app.route('/historical/<hostname>/<version>', methods=['GET'])
+@app.route('/historical/<hostname>/', methods=['GET'])
+@app.route('/historical/<hostname>', methods=['GET'])
+def historical(hostname, version=0):
+    try:
+        version = int(version)
+    except Exception, e:
+        return jsonify({'error': str(e)})
+
+    hosts = _get_hosts()
+    if hostname not in hosts:
+        return jsonify({})
+    key = "%s:%s" % (settings.HIST_PREFIX, hostname)
+    rep = conn.lindex(key, version)
+    if not rep:
+        return jsonify({'error': 'report missing or removed'})
+    rep = eval(rep)
+    gc.disable()
+    rep = unpackb(rep['report'])
+    gc.enable()
+    return jsonify(rep)
+
+
 @app.route('/details/<hostname>/', methods=['GET'])
 @app.route('/details/<hostname>', methods=['GET'])
 def details(hostname):
     hosts = _get_hosts()
     details = {}
     if hostname not in hosts:
-        details = {'error': "invalid hostname",
-                   'time': time()}
-    else:
-        details = conn.hgetall("%s:%s" % (settings.CUR_PREFIX, hostname))
-        gc.disable()
-        details = unpackb(details['report'])
-        gc.enable()
-        del details['resource_statuses']
+         return jsonify({'error': "invalid hostname",
+                         'time': (time() + timezone)}), 501
+    details = conn.hgetall("%s:%s" % (settings.CUR_PREFIX, hostname))
+    gc.disable()
+    details = unpackb(details['report'])
+    gc.enable()
+    del details['resource_statuses']
     return render_template("details.html", details=details)
 
 
