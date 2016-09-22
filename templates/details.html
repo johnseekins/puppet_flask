@@ -7,6 +7,14 @@
   <title>{{ host }} Report Details</title>
 </head>
 <body>
-{{ details }}
+  <table>
+    {%- for key in details.keys() -%}
+      <tr>
+        <td><h2>{{ key }}</h2></td>
+        <td>{{ details[key] }}</td>
+      </tr>
+    {%- endfor -%}
+  </table>
 </body>
 </html>
+

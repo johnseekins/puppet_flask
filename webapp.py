@@ -19,13 +19,6 @@ conn = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT,
                    settings.REDIS_DB)
 
 
-def _decode_datetime(obj):
-    if b'__datetime__' in obj:
-        obj = datetime.datetime.strptime(obj["as_str"],
-                                         "%Y%m%dT%H:%M:%S.%f")
-    return obj
-
-
 def _get_hosts():
     hosts = conn.hgetall('hosts')
     gc.disable()
@@ -33,12 +26,6 @@ def _get_hosts():
     gc.enable()
     hosts = [h['host'] for h in hosts]
     return hosts
-
-
-@app.route('/upload/<hostname>/', methods=['POST'])
-@app.route('/upload/<hostname>', methods=['POST'])
-def upload_report(hostname):
-    pass
 
 
 @app.route('/details/<hostname>/', methods=['GET'])
@@ -52,7 +39,7 @@ def details(hostname):
     else:
         details = conn.hgetall("%s:%s" % (settings.CUR_PREFIX, hostname))
         gc.disable()
-        details['report'] = unpackb(details['report'])
+        details = unpackb(details['report'])
         gc.enable()
     return render_template("details.html", details=details)
 
@@ -76,3 +63,4 @@ def show_reports():
 
 if __name__ == '__main__':
     app.run(host=settings.FLASK_HOST, port=settings.FLASK_PORT, debug=True)
+
