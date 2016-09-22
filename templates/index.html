@@ -11,7 +11,7 @@
   <script type="text/javascript" src="{{url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js')}}"></script>
 </head>
 <body>
-  <table class="table">
+  <table class="table table-striped table-condensed table-hover">
     <thead>
       <td>Host</td>
       <td>Status</td>
@@ -22,7 +22,11 @@
     </thead>
     <tbody>
       {%- for r in reports -%}
-        <tr>
+        {%- if r.status in ['failed', 'error'] -%}
+          <tr class="danger">
+        {%- else -%}
+          <tr>
+        {%- endif -%}
           <td>{{ r.host }}</td>
           <td>{{ r.status }}</td>
           <td>{{ r.environment }}</td>

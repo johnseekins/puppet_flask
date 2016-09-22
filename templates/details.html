@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -11,10 +11,10 @@
   <script type="text/javascript" src="{{url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js')}}"></script>
 </head>
 <body>
-  <table class="table">
+  <table class="table table-striped table-condensed table-hover">
     {%- for key in details.keys() -%}
       <tr>
-        <td><h2>{{ key }}</h2></td>
+        <td>{{ key }}</td>
         <td>{{ details[key] }}</td>
       </tr>
     {%- endfor -%}
