@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             os.path.pardir)))
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
 from webapp import app as application
 
