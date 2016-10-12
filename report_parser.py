@@ -14,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 import settings
 
 conn = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT,
-                   settings.REDIS_DB)
+                   settings.REDIS_DB, socket_timeout=10)
 
 
 def construct_ruby_object(loader, suffix, node):

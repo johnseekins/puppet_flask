@@ -9,6 +9,11 @@ ROOT_DIR = APP_DIR.split("/")[-1]
 CUR_PREFIX = 'curreport'
 HIST_PREFIX = 'histreport'
 HIST_REPORTS = 3
+"""
+The number of seconds old a report can be before we alert
+"""
+REPORT_WARN = 3600
+REPORT_ERROR = 7200
 
 # Debug
 FLASK_HOST = '0.0.0.0'

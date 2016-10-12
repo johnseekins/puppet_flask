@@ -65,11 +65,12 @@ def details(hostname):
     details = unpackb(details['report'])
     gc.enable()
     del details['resource_statuses']
-    return render_template("details.html", details=details)
+    return jsonify(details)
 
 
 @app.route('/', methods=['GET'])
 def show_reports():
+    cur_t = time() + timezone
     hosts = _get_hosts()
     reports = []
     for h in hosts:
@@ -82,11 +83,15 @@ def show_reports():
         value = {'host': r['report']['host'],
                  'status': r['report']['status'],
                  'environment': r['report']['environment'],
-                 'time': t}
+                 'time': t, 'epoch': float(r['time'])}
         if all(v not in value['status'] for v in ['failed', 'error']):
-            value['change_count'] = r['report']['metrics']['changes']['values'][0][2],
+            changes = r['report']['metrics']['changes']
+            value['change_count'] = changes['values'][0][2],
         reports.append(value)
-    return render_template("index.html", reports=reports)
+    warning = cur_t - settings.REPORT_WARN
+    error = cur_t - settings.REPORT_ERROR
+    return render_template("index.html", reports=reports, warn=warning,
+                           error=error)
 
 if __name__ == '__main__':
     app.run(host=settings.FLASK_HOST, port=settings.FLASK_PORT, debug=True)

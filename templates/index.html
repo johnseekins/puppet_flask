@@ -22,10 +22,12 @@
     </thead>
     <tbody>
       {%- for r in reports -%}
-        {%- if r.status in ['failed', 'error'] -%}
+        {%- if r.status in ['failed', 'error'] or r.epoch < error -%}
           <tr class="danger">
-        {%- else -%}
-          <tr>
+        {%- elif r.epoch < warning -%}
+          <tr class="warning">
+	{%- else -%}
+	  <tr>
         {%- endif -%}
           <td>{{ r.host }}</td>
           <td>{{ r.status }}</td>
