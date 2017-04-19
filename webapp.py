@@ -11,15 +11,27 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              os.path.pardir)))
 import settings
 
+"""
+Generally, we will add use msgpack for compressing data, which is nice,
+but because of how the unpack code works, we need to disable normal
+python garbage collection for the command. e.g.
+gc.disable()
+var = unpackb(<msgpack data>)
+gc.enable()
+At small scales, this doesn't really matter, but as the size of the project
+increases, we can see performance problems if we don't do this.
+"""
+
 app = Flask(__name__)
 app.config.from_object(settings)
 app.template_folder = "%s/templates" % settings.APP_DIR
 
+# Use a single redis connection
 conn = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT,
                    settings.REDIS_DB)
 
-
 def _get_hosts():
+    # Get a list of hosts that have reports from redis 
     hosts = conn.hgetall('hosts')
     gc.disable()
     hosts = unpackb(hosts['hosts'])
@@ -33,6 +45,12 @@ def _get_hosts():
 @app.route('/historical/<hostname>/', methods=['GET'])
 @app.route('/historical/<hostname>', methods=['GET'])
 def historical(hostname, version=0):
+    """
+    We're using a list in redis for historical reports
+    only keeping 'x' number of reports and relying on
+    redis to "age out" the extra reports as new ones 
+    come in
+    """
     try:
         version = int(version)
     except Exception, e:
@@ -55,6 +73,7 @@ def historical(hostname, version=0):
 @app.route('/details/<hostname>/', methods=['GET'])
 @app.route('/details/<hostname>', methods=['GET'])
 def details(hostname):
+    # fetch a full report for a specific host
     hosts = _get_hosts()
     details = {}
     if hostname not in hosts:
